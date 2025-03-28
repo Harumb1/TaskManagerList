@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -26,24 +27,35 @@ public class Main {
             case "1":
                 System.out.print("How would you like to name your new task?\n");
                 newTask = sc.nextLine();
+
                 try {
                     File myObj = new File(newTask + ".txt");
                     if (myObj.createNewFile()) {
+                        FileWriter writer = new FileWriter(myObj, true);
                         System.out.println("New Task Created:\n" + myObj.getName());
+                        while(choice.equals("1")){
+                            writer.write(sc.nextLine());
+//                           if(){
+//                              writer.close();
+//                            }
+                    }
+
                     } else {
                         System.out.println("File already exists.");
                     }
+                    //https://stackoverflow.com/questions/1625234/how-to-append-text-to-an-existing-file-in-java
+
                 } catch (IOException e) {
                     System.out.println("An error occurred.");
                     e.printStackTrace();
                 }
                     break;
                     case "2":
-                    
+
                         break;
                     case "3":
                         System.out.print("See you soon :)!");
                         break;
                 }
         }
-    }
+}
