@@ -6,6 +6,7 @@ import java.util.Scanner;
 public class Main {
     static String choice;
     static String newTask;
+
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         System.out.println("  _______    _____              _     _      _ \n" +
@@ -21,6 +22,7 @@ public class Main {
         choice = sc.nextLine();
         setChoice();
     }
+
     static void setChoice() {
         Scanner sc = new Scanner(System.in);
         switch (choice) {
@@ -36,14 +38,13 @@ public class Main {
                         String input = null;
                         System.out.println("New Task Created:\n" + newTask);
                         System.out.println("Your task can now receive input: ");
-                        while(!"exit".equalsIgnoreCase(input)){
-                            input = sc.nextLine() + "\n";
+                        while (!"exit".equalsIgnoreCase(input = sc.nextLine())) {
                             FileWriter writer = new FileWriter(myObj, true);
-                            writer.append(input);
+                            writer.append(input).append("\n");
 
                             writer.flush();
                             writer.close();
-                    }
+                        }
 
                     } else {
                         System.out.println("File already exists.");
@@ -53,12 +54,13 @@ public class Main {
                     System.out.println("An error occurred.");
                     e.printStackTrace();
                 }
-                    break;
-                    case "2":
+                break;
+            case "2":
 
-                        break;
-                    case "3":
-                        System.out.print("See you soon :)");
-                        break;
-                }
+                break;
+            case "3":
+                System.out.print("See you soon :)");
+                break;
         }
+    }
+}
