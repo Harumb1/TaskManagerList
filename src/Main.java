@@ -30,20 +30,24 @@ public class Main {
 
                 try {
                     File myObj = new File(newTask + ".txt");
+                    //https://stackoverflow.com/questions/1625234/how-to-append-text-to-an-existing-file-in-java
+                    //https://stackoverflow.com/questions/34836789/how-to-append-java-output-to-text-file
                     if (myObj.createNewFile()) {
-                        FileWriter writer = new FileWriter(myObj, true);
-                        System.out.println("New Task Created:\n" + myObj.getName());
-                        while(choice.equals("1")){
-                            writer.write(sc.nextLine());
-//                           if(){
-//                              writer.close();
-//                            }
+                        String input = null;
+                        System.out.println("New Task Created:\n" + newTask);
+                        System.out.println("Your task can now receive input: ");
+                        while(!"exit".equalsIgnoreCase(input)){
+                            input = sc.nextLine() + "\n";
+                            FileWriter writer = new FileWriter(myObj, true);
+                            writer.append(input);
+
+                            writer.flush();
+                            writer.close();
                     }
 
                     } else {
                         System.out.println("File already exists.");
                     }
-                    //https://stackoverflow.com/questions/1625234/how-to-append-text-to-an-existing-file-in-java
 
                 } catch (IOException e) {
                     System.out.println("An error occurred.");
@@ -54,8 +58,7 @@ public class Main {
 
                         break;
                     case "3":
-                        System.out.print("See you soon :)!");
+                        System.out.print("See you soon :)");
                         break;
                 }
         }
-}
