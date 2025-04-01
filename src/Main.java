@@ -55,7 +55,7 @@ public class Main {
 
                 FileWriter taskList = new FileWriter("C:\\Users\\alexs\\IdeaProjects\\TaskManagerList\\ListOfTasks.txt", true);
                 try {
-                    taskList.append(newTask + "\n");
+                    taskList.append(newTask).append("\n");
                     taskList.flush();
                     taskList.close();
                 } catch (IOException e) {
