@@ -1,13 +1,16 @@
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Scanner;
 
 public class Main {
     static String choice;
     static String newTask;
+    static String exitChoice;
 
     public static void main(String[] args) throws IOException {
+        mainMenu();
+        setChoice();
+    }
+    static void mainMenu() {
         Scanner sc = new Scanner(System.in);
         System.out.println("  _______    _____              _     _      _ \n" +
                 " |__   __|  |  __ \\            | |   | |    | |\n" +
@@ -20,28 +23,24 @@ public class Main {
         System.out.println("                  2.Open an existing task");
         System.out.println("                  3.Exit");
         choice = sc.nextLine();
-        setChoice();
     }
 
     static void setChoice() throws IOException {
         Scanner sc = new Scanner(System.in);
         switch (choice) {
+
             case "1":
-                System.out.print("How would you like to name your new task?\n");
+                System.out.print("Your New Task's Name:\n");
                 newTask = sc.nextLine();
                 try {
                     File task = new File(newTask + ".txt");
-                    //https://stackoverflow.com/questions/1625234/how-to-append-text-to-an-existing-file-in-java
-                    //https://stackoverflow.com/questions/34836789/how-to-append-java-output-to-text-file
                     if (task.createNewFile()) {
                         String input = null;
                         System.out.println("New Task Created!\n" + "\"" + newTask + "\"");
-                        System.out.println("=================================================" + "\n");
+                        System.out.println("============================================================================");
                         while (!"exit".equalsIgnoreCase(input = sc.nextLine())) {
                             FileWriter writer = new FileWriter(task, true);
-//                            taskList.append(newTask);
                             writer.append(input).append("\n");
-
                             writer.flush();
                             writer.close();
                         }
@@ -52,7 +51,6 @@ public class Main {
                     System.out.println("An error occurred.");
                     e.printStackTrace();
                 }
-
                 FileWriter taskList = new FileWriter("C:\\Users\\alexs\\IdeaProjects\\TaskManagerList\\ListOfTasks.txt", true);
                 try {
                     taskList.append(newTask).append("\n");
@@ -61,9 +59,39 @@ public class Main {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+                mainMenu();
                 break;
-            case "2":
 
+            case "2":
+                System.out.println("List of tasks:");
+                try (BufferedReader reader = new BufferedReader(new FileReader("ListOfTasks.txt"))) {
+
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        System.out.println(line);
+                    }
+                } catch (FileNotFoundException e) {
+                    System.out.println("Could not locate file");
+                } catch (IOException e) {
+                    System.out.println("Something went wrong");
+                }
+                System.out.println("Exit?" + "\n" + "y/n:");
+                exitChoice = sc.nextLine();
+                switch (exitChoice) {
+                    case "y":
+                        mainMenu();
+                        break;
+                    case "n":
+
+                        break;
+                    default:
+                        while(!"y".equalsIgnoreCase(exitChoice = sc.nextLine())){
+                            System.out.println("There is no such command!");
+                            System.out.println("Exit?" + "\n" + "y/n:");
+                            exitChoice = sc.nextLine();
+                        }
+                        break;
+                }
                 break;
             case "3":
                 System.out.print("See you soon :)");
