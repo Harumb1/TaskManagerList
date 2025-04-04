@@ -75,23 +75,18 @@ public class Main {
                 } catch (IOException e) {
                     System.out.println("Something went wrong");
                 }
-                System.out.println("Exit?" + "\n" + "y/n:");
+                System.out.println("\n" + "Exit?");
                 exitChoice = sc.nextLine();
-                switch (exitChoice) {
-                    case "y":
-                        mainMenu();
-                        break;
-                    case "n":
-
-                        break;
-                    default:
-                        while(!"y".equalsIgnoreCase(exitChoice = sc.nextLine())){
+                if (exitChoice.equals("exit")) {
+                    mainMenu();
+                    setChoice();
+                } else {
+                    while (!"exit".equalsIgnoreCase(exitChoice)) {
                             System.out.println("There is no such command!");
-                            System.out.println("Exit?" + "\n" + "y/n:");
-                            exitChoice = sc.nextLine();
+                            System.out.println("Exit?");
                         }
-                        break;
-                }
+
+                    }
                 break;
             case "3":
                 System.out.print("See you soon :)");
