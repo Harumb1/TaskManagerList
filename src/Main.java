@@ -10,7 +10,8 @@ public class Main {
         mainMenu();
         setChoice();
     }
-    static void mainMenu() {
+
+    static void mainMenu() throws IOException {
         Scanner sc = new Scanner(System.in);
         System.out.println("  _______    _____              _     _      _ \n" +
                 " |__   __|  |  __ \\            | |   | |    | |\n" +
@@ -23,12 +24,12 @@ public class Main {
         System.out.println("                  2.Open an existing task");
         System.out.println("                  3.Exit");
         choice = sc.nextLine();
+        setChoice();
     }
 
     static void setChoice() throws IOException {
         Scanner sc = new Scanner(System.in);
         switch (choice) {
-
             case "1":
                 System.out.print("Your New Task's Name:\n");
                 newTask = sc.nextLine();
@@ -61,7 +62,6 @@ public class Main {
                 }
                 mainMenu();
                 break;
-
             case "2":
                 System.out.println("List of tasks:");
                 try (BufferedReader reader = new BufferedReader(new FileReader("ListOfTasks.txt"))) {
@@ -75,21 +75,27 @@ public class Main {
                 } catch (IOException e) {
                     System.out.println("Something went wrong");
                 }
-                System.out.println("\n" + "Exit?");
-                exitChoice = sc.nextLine();
-                if (exitChoice.equals("exit")) {
-                    mainMenu();
-                    setChoice();
-                } else {
-                    while (!"exit".equalsIgnoreCase(exitChoice)) {
-                            System.out.println("There is no such command!");
-                            System.out.println("Exit?");
-                        }
-
+                while (true) {
+                    System.out.println("\nType \"edit\" to modify an existing task:");
+                    System.out.println("Type \"exit\" to return to the main menu:");
+                    exitChoice = sc.nextLine();
+                    if (exitChoice.equalsIgnoreCase("exit")) {
+                        mainMenu();
+                        setChoice();
+                        break;
+                    } else {
+                        System.out.println("There is no such command!");
                     }
+                }
                 break;
             case "3":
                 System.out.print("See you soon :)");
+                break;
+            default:
+                System.out.println("There is no such command!");
+                choice = sc.nextLine();
+                setChoice();
+                //recursion
                 break;
         }
     }
