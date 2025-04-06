@@ -5,6 +5,7 @@ public class Main {
     static String choice;
     static String newTask;
     static String exitChoice;
+    static String editChoice;
 
     public static void main(String[] args) throws IOException {
         mainMenu();
@@ -27,10 +28,35 @@ public class Main {
         setChoice();
     }
 
+    static void listOfTasks(){
+        System.out.println("List of tasks:");
+        try (BufferedReader reader = new BufferedReader(new FileReader("ListOfTasks.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Could not locate file");
+        } catch (IOException e) {
+            System.out.println("Something went wrong");
+        }
+    }
+
+    static void readTask(){
+
+    }
+
     static void setChoice() throws IOException {
         Scanner sc = new Scanner(System.in);
         switch (choice) {
+            //Case for Main Menu
             case "1":
+                System.out.println(" _   _                 _____         _    _ \n" +
+                        "| \\ | |               |_   _|       | |  | |\n" +
+                        "|  \\| | _____      __   | | __ _ ___| | _| |\n" +
+                        "| . ` |/ _ \\ \\ /\\ / /   | |/ _` / __| |/ / |\n" +
+                        "| |\\  |  __/\\ V  V /    | | (_| \\__ \\   <|_|\n" +
+                        "\\_| \\_/\\___| \\_/\\_/     \\_/\\__,_|___/_|\\_(_)");
                 System.out.print("Your New Task's Name:\n");
                 newTask = sc.nextLine();
                 try {
@@ -45,7 +71,8 @@ public class Main {
                             writer.flush();
                             writer.close();
                         }
-                    } else {
+                    }
+                    else {
                         System.out.println("File already exists.");
                     }
                 } catch (IOException e) {
@@ -62,32 +89,59 @@ public class Main {
                 }
                 mainMenu();
                 break;
-            case "2":
-                System.out.println("List of tasks:");
-                try (BufferedReader reader = new BufferedReader(new FileReader("ListOfTasks.txt"))) {
 
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        System.out.println(line);
-                    }
-                } catch (FileNotFoundException e) {
-                    System.out.println("Could not locate file");
-                } catch (IOException e) {
-                    System.out.println("Something went wrong");
-                }
+            //Case for showing the previously created tasks and modifying them
+            case "2":
+                listOfTasks();
+
                 while (true) {
-                    System.out.println("\nType \"edit\" to modify an existing task:");
-                    System.out.println("Type \"exit\" to return to the main menu:");
+                    System.out.println("\nType \"open\" to read an existing task");
+                    System.out.println("Type \"edit\" to modify an existing task");
+                    System.out.println("Type \"exit\" to return to the main menu");
                     exitChoice = sc.nextLine();
+                    //exit
                     if (exitChoice.equalsIgnoreCase("exit")) {
                         mainMenu();
                         setChoice();
+                        break;
+                    } else if (exitChoice.equalsIgnoreCase("edit")) {
+                        System.out.println("Which file would you like to edit?");
+
+                        break;
+                    }
+                    else if (exitChoice.equalsIgnoreCase("open")) {
+                        System.out.println("Which file would you like to OPEN?");
+
+                        break;
+                    }
+                    else {
+                        System.out.println("There is no such command!");
+                    }
+
+                }
+
+                while (true) {
+                    if (exitChoice.equalsIgnoreCase("open")) {
+                        System.out.println("Which file would you like to OPEN?");
+
+                        break;
+                    } else {
+                        System.out.println("There is no such command!");
+                    }
+                }
+
+                while (true) {
+                    if (exitChoice.equalsIgnoreCase("edit")) {
+                        System.out.println("Which file would you like to EDIT?");
+
                         break;
                     } else {
                         System.out.println("There is no such command!");
                     }
                 }
                 break;
+
+            //Case "Exit"
             case "3":
                 System.out.print("See you soon :)");
                 break;
