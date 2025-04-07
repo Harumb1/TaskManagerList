@@ -21,24 +21,30 @@ public class Main {
                 "    | | (_) | |__| | (_) | (_| | |_) | |  __/_|\n" +
                 "    |_|\\___/|_____/ \\___/ \\__,_|_.__/|_|\\___(_)");
 
-        System.out.println("\n                  1.New Task");
-        System.out.println("                  2.Open an existing task");
-        System.out.println("                  3.Exit");
+        System.out.println("\n                  1.NEW TASK");
+        System.out.println("                  2.OPEN AN EXISTING TASK");
+        System.out.println("                  3.EXIT");
         choice = sc.nextLine();
         setChoice();
     }
 
     static void listOfTasks(){
-        System.out.println("List of tasks:");
+        System.out.println("  _      _     _    ____   __ _______        _        _ \n" +
+                " | |    (_)   | |  / __ \\ / _|__   __|      | |      | |\n" +
+                " | |     _ ___| |_| |  | | |_   | | __ _ ___| | _____| |\n" +
+                " | |    | / __| __| |  | |  _|  | |/ _` / __| |/ / __| |\n" +
+                " | |____| \\__ \\ |_| |__| | |    | | (_| \\__ \\   <\\__ \\_|\n" +
+                " |______|_|___/\\__|\\____/|_|    |_|\\__,_|___/_|\\_\\___(_)");
+        System.out.println("LIST OF TASKS:");
         try (BufferedReader reader = new BufferedReader(new FileReader("ListOfTasks.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
             }
         } catch (FileNotFoundException e) {
-            System.out.println("Could not locate file");
+            System.out.println("Could not locate file.");
         } catch (IOException e) {
-            System.out.println("Something went wrong");
+            System.out.println("Something went wrong.");
         }
     }
 
@@ -95,21 +101,23 @@ public class Main {
                 listOfTasks();
 
                 while (true) {
-                    System.out.println("\nType \"open\" to read an existing task");
-                    System.out.println("Type \"edit\" to modify an existing task");
-                    System.out.println("Type \"exit\" to return to the main menu");
+                    System.out.println("\nType:");
+                    System.out.println(" |OPEN| to read an existing task");
+                    System.out.println(" |EDIT| to modify an existing task");
+                    System.out.println(" |EXIT| to return to the main menu");
                     exitChoice = sc.nextLine();
                     //exit
                     if (exitChoice.equalsIgnoreCase("exit")) {
                         mainMenu();
                         setChoice();
                         break;
-                    } else if (exitChoice.equalsIgnoreCase("edit")) {
+                    }
+                     if (exitChoice.equalsIgnoreCase("edit")) {
                         System.out.println("Which file would you like to edit?");
 
                         break;
                     }
-                    else if (exitChoice.equalsIgnoreCase("open")) {
+                     if (exitChoice.equalsIgnoreCase("open")) {
                         System.out.println("Which file would you like to OPEN?");
 
                         break;
@@ -118,26 +126,6 @@ public class Main {
                         System.out.println("There is no such command!");
                     }
 
-                }
-
-                while (true) {
-                    if (exitChoice.equalsIgnoreCase("open")) {
-                        System.out.println("Which file would you like to OPEN?");
-
-                        break;
-                    } else {
-                        System.out.println("There is no such command!");
-                    }
-                }
-
-                while (true) {
-                    if (exitChoice.equalsIgnoreCase("edit")) {
-                        System.out.println("Which file would you like to EDIT?");
-
-                        break;
-                    } else {
-                        System.out.println("There is no such command!");
-                    }
                 }
                 break;
 
