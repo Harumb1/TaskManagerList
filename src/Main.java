@@ -77,7 +77,7 @@ public class Main {
                     }
                     //edit
                     if (exitChoice.equalsIgnoreCase("edit")) {
-                        System.out.println("Which file would you like to edit?");
+                        System.out.println("Which file would you like to EDIT?");
                         exitChoice = sc.nextLine();
                         break;
                     }
@@ -86,25 +86,37 @@ public class Main {
                         System.out.println("Which file would you like to OPEN?");
                         readTask();
                         exitChoice = sc.nextLine();
-                        break;
-                    }
-                    else {
+                        String input = null;
+                        if (exitChoice.equalsIgnoreCase("edit")) {
+                            File task = new File(editChoice + ".txt");
+                            if (task.createNewFile()) {
+                                System.out.println("Replacement created!");
+                            }
+                        }
+                        System.out.println("============================================================================");
+                        while (!"exit".equalsIgnoreCase(input = sc.nextLine())) {
+                            FileWriter writer = new FileWriter(editChoice + ".txt", true);
+                            writer.append(input).append("\n");
+                            writer.flush();
+                            writer.close();
+                        }
+                    } else {
                         System.out.println("There is no such command!");
                     }
-
+                    break;
                 }
                 break;
 
-                    //Case "Exit"
-                    case "3":
-                        System.out.print("See you soon :)");
-                        break;
-                    default:
-                        System.out.println("There is no such command!");
-                        choice = sc.nextLine();
-                        setChoice();
-                        //recursion
-                        break;
+            //Case "Exit"
+            case "3":
+                System.out.print("See you soon :)");
+                break;
+            default:
+                System.out.println("There is no such command!");
+                choice = sc.nextLine();
+                setChoice();
+                //recursion
+                break;
         }
     }
 
