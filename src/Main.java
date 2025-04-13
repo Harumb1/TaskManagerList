@@ -1,5 +1,6 @@
 import java.awt.desktop.ScreenSleepEvent;
 import java.io.*;
+import java.nio.channels.ScatteringByteChannel;
 import java.util.Scanner;
 
 public class Main {
@@ -80,6 +81,7 @@ public class Main {
                     if (exitChoice.equalsIgnoreCase("edit")) {
                         System.out.println("Which file would you like to EDIT?");
                         exitChoice = sc.nextLine();
+
                         break;
                     }
                     //open
@@ -88,13 +90,22 @@ public class Main {
                         readTask();
                         exitChoice = sc.nextLine();
                         String input = null;
-                        if (exitChoice.equalsIgnoreCase("edit")) {
-                            File task = new File(editChoice + ".txt");
-                            if (task.createNewFile()) {
-                                System.out.println("Replacement created!");
-                            }
-                        }
                         System.out.println("============================================================================");
+                        //
+                        //TO BE FIXED
+                        //
+                        try {
+                            if (exitChoice.equalsIgnoreCase("edit")) {
+                                File task = new File(exitChoice + "(1)" + ".txt");
+                                if (task.createNewFile()) {
+                                    System.out.println("Replacement created!");
+                                }
+                            }
+
+                        }catch (IOException e) {
+                            System.out.println("An error occurred.");
+                            e.printStackTrace();
+                        }
                         while (!"exit".equalsIgnoreCase(input = sc.nextLine())) {
                             FileWriter writer = new FileWriter(editChoice + ".txt", true);
                             writer.append(input).append("\n");
