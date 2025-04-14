@@ -1,13 +1,16 @@
 import java.awt.desktop.ScreenSleepEvent;
 import java.io.*;
 import java.nio.channels.ScatteringByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Scanner;
 
 public class Main {
     static String choice;
     static String newTask;
     static String exitChoice;
-    static String editChoice;
+    static String readChoice;
 
     public static void main(String[] args) throws IOException {
         mainMenu();
@@ -90,28 +93,32 @@ public class Main {
                         readTask();
                         exitChoice = sc.nextLine();
                         String input = null;
-                        System.out.println("============================================================================");
                         //
                         //TO BE FIXED
                         //
                         try {
                             if (exitChoice.equalsIgnoreCase("edit")) {
-                                File task = new File(exitChoice + "(1)" + ".txt");
+                                System.out.println("Replacement created!");
+                                System.out.println("============================================================================");
+                                File task = new File("C:\\Users\\alexs\\IdeaProjects\\TaskManagerList\\EditFolder\\" + readChoice + ".txt");
                                 if (task.createNewFile()) {
-                                    System.out.println("Replacement created!");
+                                    while (!"exit".equalsIgnoreCase(input = sc.nextLine())) {
+                                        FileWriter writer = new FileWriter("C:\\Users\\alexs\\IdeaProjects\\TaskManagerList\\EditFolder\\" + readChoice + ".txt", true);
+                                        writer.append(input).append("\n");
+                                        writer.flush();
+                                        writer.close();
+                                    }
+                                    Files.delete(Path.of("C:\\Users\\alexs\\IdeaProjects\\TaskManagerList\\" + readChoice + ".txt"));
+                                    Files.move(Path.of("C:\\Users\\alexs\\IdeaProjects\\TaskManagerList\\EditFolder\\" + readChoice + ".txt"),Path.of("C:\\Users\\alexs\\IdeaProjects\\TaskManagerList\\" + readChoice + ".txt"), StandardCopyOption.REPLACE_EXISTING);
                                 }
+
                             }
 
                         }catch (IOException e) {
                             System.out.println("An error occurred.");
                             e.printStackTrace();
                         }
-                        while (!"exit".equalsIgnoreCase(input = sc.nextLine())) {
-                            FileWriter writer = new FileWriter(editChoice + ".txt", true);
-                            writer.append(input).append("\n");
-                            writer.flush();
-                            writer.close();
-                        }
+
                     } else {
                         System.out.println("There is no such command!");
                     }
@@ -170,8 +177,8 @@ public class Main {
 
     static void readTask() {
         Scanner sc = new Scanner(System.in);
-        editChoice = sc.nextLine();
-        try (BufferedReader reader = new BufferedReader(new FileReader(editChoice + ".txt"))) {
+        readChoice = sc.nextLine();
+        try (BufferedReader reader = new BufferedReader(new FileReader(readChoice + ".txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
