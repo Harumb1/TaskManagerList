@@ -1,6 +1,4 @@
-import java.awt.desktop.ScreenSleepEvent;
 import java.io.*;
-import java.nio.channels.ScatteringByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -12,17 +10,21 @@ public class Main {
     static String exitChoice;
     static String readChoice;
 
+
+    static final String base_dir = System.getProperty("user.dir");
+    static final String tasks_dir = base_dir + File.separator;
+    static final String edit_folder = tasks_dir + "EditFolder" + File.separator;
+    static final String task_list_file = tasks_dir + "ListOfTasks.txt";
+
     public static void main(String[] args) throws IOException {
         mainMenu();
         setChoice();
     }
 
-    //https://stackoverflow.com/questions/822150/modify-a-txt-file-in-java
     static void setChoice() throws IOException {
         Scanner sc = new Scanner(System.in);
         switch (choice) {
-            //Case for Main Menu
-            case "1":
+            case "1": // New Task
                 System.out.println(" _   _                 _____         _    _ \n" +
                         "| \\ | |               |_   _|       | |  | |\n" +
                         "|  \\| | _____      __   | | __ _ ___| | _| |\n" +
@@ -31,9 +33,10 @@ public class Main {
                         "\\_| \\_/\\___| \\_/\\_/     \\_/\\__,_|___/_|\\_(_)");
                 System.out.print("Your New Task's Name:\n");
                 newTask = sc.nextLine();
+
                 try {
                     String input;
-                    File task = new File(newTask + ".txt");
+                    File task = new File(tasks_dir + newTask + ".txt");
                     if (task.createNewFile()) {
                         input = null;
                         System.out.println("New Task Created!\n" + "\"" + newTask + "\"");
@@ -51,90 +54,88 @@ public class Main {
                     System.out.println("An error occurred.");
                     e.printStackTrace();
                 }
-                FileWriter taskList = new FileWriter("C:\\Users\\alexs\\IdeaProjects\\TaskManagerList\\ListOfTasks.txt", true);
-                try {
+
+                try (FileWriter taskList = new FileWriter(task_list_file, true)) {
                     taskList.append(newTask).append("\n");
-                    taskList.flush();
-                    taskList.close();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+
                 mainMenu();
                 break;
 
-            //Case for showing the previously created tasks and modifying them
-            case "2":
+            case "2": // Open/Edit Task
                 listOfTasks();
 
                 while (true) {
-
                     System.out.println("\nType:");
                     System.out.println(" |OPEN| to read an existing task");
                     System.out.println(" |EDIT| to modify an existing task");
                     System.out.println(" |EXIT| to return to the main menu");
                     exitChoice = sc.nextLine();
 
-                    //exit
                     if (exitChoice.equalsIgnoreCase("exit")) {
                         mainMenu();
                         setChoice();
                         break;
                     }
-                    //edit
+
                     if (exitChoice.equalsIgnoreCase("edit")) {
                         System.out.println("Which file would you like to EDIT?");
                         exitChoice = sc.nextLine();
-
                         break;
                     }
-                    //open
+
                     if (exitChoice.equalsIgnoreCase("open")) {
                         System.out.println("Which file would you like to OPEN?");
                         readTask();
                         exitChoice = sc.nextLine();
                         String input = null;
-                        //
-                        //TO BE FIXED
-                        //
+
                         try {
                             if (exitChoice.equalsIgnoreCase("edit")) {
                                 System.out.println("Replacement created!");
                                 System.out.println("============================================================================");
-                                File task = new File("C:\\Users\\alexs\\IdeaProjects\\TaskManagerList\\EditFolder\\" + readChoice + ".txt");
+
+                                // Ensure EditFolder exists
+                                new File(edit_folder).mkdirs();
+
+                                String originalFile = tasks_dir + readChoice + ".txt";
+                                String tempFile = edit_folder + readChoice + ".txt";
+                                File task = new File(tempFile);
+
                                 if (task.createNewFile()) {
                                     while (!"exit".equalsIgnoreCase(input = sc.nextLine())) {
-                                        FileWriter writer = new FileWriter("C:\\Users\\alexs\\IdeaProjects\\TaskManagerList\\EditFolder\\" + readChoice + ".txt", true);
+                                        FileWriter writer = new FileWriter(tempFile, true);
                                         writer.append(input).append("\n");
                                         writer.flush();
                                         writer.close();
                                     }
-                                    Files.delete(Path.of("C:\\Users\\alexs\\IdeaProjects\\TaskManagerList\\" + readChoice + ".txt"));
-                                    Files.move(Path.of("C:\\Users\\alexs\\IdeaProjects\\TaskManagerList\\EditFolder\\" + readChoice + ".txt"),Path.of("C:\\Users\\alexs\\IdeaProjects\\TaskManagerList\\" + readChoice + ".txt"), StandardCopyOption.REPLACE_EXISTING);
+
+                                    Files.deleteIfExists(Path.of(originalFile));
+                                    Files.move(Path.of(tempFile), Path.of(originalFile), StandardCopyOption.REPLACE_EXISTING);
                                 }
-
                             }
-
-                        }catch (IOException e) {
+                        } catch (IOException e) {
                             System.out.println("An error occurred.");
                             e.printStackTrace();
                         }
-
                     } else {
                         System.out.println("There is no such command!");
                     }
+
                     break;
                 }
                 break;
 
-            //Case "Exit"
-            case "3":
+            case "3": // Exit
                 System.out.print("See you soon :)");
                 break;
+
             default:
                 System.out.println("There is no such command!");
                 choice = sc.nextLine();
-                setChoice();
-                //recursion
+                setChoice(); // recursion
                 break;
         }
     }
@@ -162,8 +163,9 @@ public class Main {
                 " | |    | / __| __| |  | |  _|  | |/ _` / __| |/ / __| |\n" +
                 " | |____| \\__ \\ |_| |__| | |    | | (_| \\__ \\   <\\__ \\_|\n" +
                 " |______|_|___/\\__|\\____/|_|    |_|\\__,_|___/_|\\_\\___(_)");
+
         System.out.println("LIST OF TASKS:");
-        try (BufferedReader reader = new BufferedReader(new FileReader("ListOfTasks.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(task_list_file))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
@@ -178,7 +180,7 @@ public class Main {
     static void readTask() {
         Scanner sc = new Scanner(System.in);
         readChoice = sc.nextLine();
-        try (BufferedReader reader = new BufferedReader(new FileReader(readChoice + ".txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(tasks_dir + readChoice + ".txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
@@ -188,6 +190,5 @@ public class Main {
         } catch (IOException e) {
             System.out.println("Something went wrong.");
         }
-
     }
 }
