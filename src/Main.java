@@ -70,8 +70,9 @@ public class Main {
                 while (true) {
                     System.out.println("\nType:");
                     System.out.println(" |OPEN| to read an existing task");
-                    System.out.println(" |EDIT| to modify an existing task");
                     System.out.println(" |EXIT| to return to the main menu");
+                    System.out.println("\n*Note* To modify an existing task you have to first open it.");
+
                     exitChoice = sc.nextLine();
 
                     if (exitChoice.equalsIgnoreCase("exit")) {
@@ -80,16 +81,9 @@ public class Main {
                         break;
                     }
 
-                    if (exitChoice.equalsIgnoreCase("edit")) {
-                        System.out.println("Which file would you like to EDIT?");
-                        exitChoice = sc.nextLine();
-                        break;
-                    }
-
                     if (exitChoice.equalsIgnoreCase("open")) {
                         System.out.println("Which file would you like to OPEN?");
                         readTask();
-                        exitChoice = sc.nextLine();
                         String input = null;
 
                         try {
@@ -97,7 +91,7 @@ public class Main {
                                 System.out.println("Replacement created!");
                                 System.out.println("============================================================================");
 
-                                // Ensure EditFolder exists
+                                // Make sure EditFolder exists
                                 new File(edit_folder).mkdirs();
 
                                 String originalFile = tasks_dir + readChoice + ".txt";
@@ -142,6 +136,9 @@ public class Main {
 
     static void mainMenu() throws IOException {
         Scanner sc = new Scanner(System.in);
+        System.out.println("\n                      *Note*" +
+                "\n        Type 1-3 in the empty line bellow.");
+        System.out.println("");
         System.out.println("  _______    _____              _     _      _ \n" +
                 " |__   __|  |  __ \\            | |   | |    | |\n" +
                 "    | | ___ | |  | | ___   __ _| |__ | | ___| |\n" +
@@ -150,8 +147,9 @@ public class Main {
                 "    |_|\\___/|_____/ \\___/ \\__,_|_.__/|_|\\___(_)");
 
         System.out.println("\n                  1.NEW TASK");
-        System.out.println("                  2.OPEN AN EXISTING TASK");
+        System.out.println("                  2.SEE EXISTING TASKS");
         System.out.println("                  3.EXIT");
+
         choice = sc.nextLine();
         setChoice();
     }
@@ -190,5 +188,6 @@ public class Main {
         } catch (IOException e) {
             System.out.println("Something went wrong.");
         }
+        exitChoice = sc.nextLine();
     }
 }
