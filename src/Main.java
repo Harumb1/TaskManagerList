@@ -71,7 +71,7 @@ public class Main {
                     System.out.println("\nType:");
                     System.out.println(" |OPEN| to read an existing task");
                     System.out.println(" |EXIT| to return to the main menu");
-                    System.out.println("\n*Note* To modify an existing task you have to first open it.");
+                    System.out.println("\n*Note* To delete or modify an existing task you have to first open it.");
 
                     exitChoice = sc.nextLine();
 
@@ -114,6 +114,11 @@ public class Main {
                             System.out.println("An error occurred.");
                             e.printStackTrace();
                         }
+
+                        if(exitChoice.equalsIgnoreCase("delete")){
+                            System.out.println("            ***STILL IN PROGRESS***");
+                        }
+
                     } else {
                         System.out.println("There is no such command!");
                     }
@@ -123,7 +128,12 @@ public class Main {
                 break;
 
             case "3": // Exit
-                System.out.print("See you soon :)");
+                System.out.print("See you soon :) ");
+                break;
+
+            case "4":
+                System.out.println("            ***STILL IN PROGRESS***\n");
+
                 break;
 
             default:
@@ -132,6 +142,7 @@ public class Main {
                 setChoice(); // recursion
                 break;
         }
+
     }
 
     static void mainMenu() throws IOException {
@@ -149,6 +160,7 @@ public class Main {
         System.out.println("\n                  1.NEW TASK");
         System.out.println("                  2.SEE EXISTING TASKS");
         System.out.println("                  3.EXIT");
+        System.out.println("                  4.HELP");
 
         choice = sc.nextLine();
         setChoice();
