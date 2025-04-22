@@ -1,8 +1,10 @@
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
+import java.util.Objects;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Main {
     static String choice;
@@ -13,12 +15,13 @@ public class Main {
 
     static final String base_dir = System.getProperty("user.dir");
     //gets the current working directory of the program
-    static final String tasks_dir = base_dir + File.separator;
+    static final String tasks_dir = base_dir + File.separator + "TaskFolder" + File.separator ;
     //adds a file separator (like / on macOS/Linux or \ on Windows) to the end of base_dir (current working directory of the program)
     static final String edit_folder = tasks_dir + "EditFolder" + File.separator;
     //gets the directory of EditFolder and adds a file separator
-    static final String task_list_file = tasks_dir + "ListOfTasks.txt";
+    //static final String task_list_file = tasks_dir + "ListOfTasks.txt";
     //gets the directory of ListOfTasks.txt where the tasks' names are stored and later displayed
+    static final Set<String> files = listFilesUsingJavaIO(tasks_dir);
 
     public static void main(String[] args) throws IOException {
         mainMenu();
@@ -59,18 +62,17 @@ public class Main {
                     e.printStackTrace();
                 }
 
-                try (FileWriter taskList = new FileWriter(task_list_file, true)) {
-                    taskList.append(newTask).append("\n");
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+//                try (FileWriter taskList = new FileWriter(task_list_file, true)) {
+//                    taskList.append(newTask).append("\n");
+//                } catch (IOException e) {
+//                    throw new RuntimeException(e);
+//                }
 
                 mainMenu();
                 break;
 
             case "2": // Open/Edit Task
-                listOfTasks();
-
+                ListOfTasks();
                 while (true) {
                     System.out.println("\nType:");
                     System.out.println(" |OPEN| to read an existing task");
@@ -88,7 +90,6 @@ public class Main {
                     if (exitChoice.equalsIgnoreCase("open")) {
                         System.out.println("Which file would you like to OPEN?");
                         readTask();
-                        String fileChoice = readChoice;
                         String input = null;
 
                         try {
@@ -131,7 +132,6 @@ public class Main {
                             System.out.println("y/n:");
                             deleteChoice = sc.nextLine();
 
-                            //https://stackoverflow.com/questions/5360209/how-to-delete-a-specific-string-in-a-text-file
                             if (deleteChoice.equalsIgnoreCase("y") || deleteChoice.equalsIgnoreCase("yes")) {
                                 System.out.println("Full name of the file: ");
                                 delFile = fullName.nextLine();
@@ -139,33 +139,36 @@ public class Main {
 
                                 //edit ListOfTasks.txt and remove the name of the task from the list so it isn't displayed anymore after deletion process
 
-                                new File(edit_folder).mkdirs();
-
-                                String originalFile = tasks_dir + "ListOfTasks.txt";
-                                String tempFile = edit_folder + "ListOfTasks.txt";
-
-                                File task = new File(tempFile);
-
-                                if (task.createNewFile()) {
-                                String charset = "UTF-8";
-                                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(task), charset));
-                                PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream("ListOfTasks.txt"), charset));
-
-                                //Now works but deletes every line of the contents of ListOfTasks.txt
-                                for (String line; (line = reader.readLine()) != null; ) {
-                                    line = line.replace(delFile, "");
-                                    writer.println(line);
-                                }
-                                    reader.close();
-                                    writer.close();
+//                                new File(edit_folder).mkdirs();
 //
-                                Files.deleteIfExists(Path.of(originalFile));
-                                Files.move(Path.of(tempFile), Path.of(originalFile), StandardCopyOption.REPLACE_EXISTING);
-                                System.out.println("Task deleted!");
-                                }
+//                                String originalFile = tasks_dir + "ListOfTasks.txt";
+//                                String tempFile = edit_folder + "ListOfTasks.txt";
+//
+//                                File task = new File(tempFile);
+//
+//                                if (task.createNewFile()) {
+//                                    String charset = "UTF-8";
+//                                    BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(task), charset));
+//                                    PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream("ListOfTasks.txt"), charset));
+//
+//                                    //Now works but deletes every line of the contents of ListOfTasks.txt
+//                                    //delFile should store only the task we want to delete and then delete it from the ListOfTasks.txt
+//                                    //Instead it deletes all the lines within
+//                                    String line;
+//                                    while ((line = reader.readLine()) != null) {
+//                                        line = line.replace(delFile, "");
+//                                        writer.println(line);
+//                                    }
+//                                    reader.close();
+//                                    writer.close();
+////
+//                                    Files.deleteIfExists(Path.of(originalFile));
+//                                    Files.move(Path.of(tempFile), Path.of(originalFile), StandardCopyOption.REPLACE_EXISTING);
+//                                    System.out.println("Task deleted!");
+//                                }
 
                             } else if (deleteChoice.equalsIgnoreCase("n") || deleteChoice.equalsIgnoreCase("no")) {
-                                listOfTasks();
+                                ListOfTasks();
                             }
 
                         }
@@ -215,8 +218,7 @@ public class Main {
         choice = sc.nextLine();
         setChoice();
     }
-
-    static void listOfTasks() {
+    static void ListOfTasks(){
         System.out.println("  _      _     _    ____   __ _______        _        _ \n" +
                 " | |    (_)   | |  / __ \\ / _|__   __|      | |      | |\n" +
                 " | |     _ ___| |_| |  | | |_   | | __ _ ___| | _____| |\n" +
@@ -225,16 +227,16 @@ public class Main {
                 " |______|_|___/\\__|\\____/|_|    |_|\\__,_|___/_|\\_\\___(_)");
 
         System.out.println("LIST OF TASKS:");
-        try (BufferedReader reader = new BufferedReader(new FileReader(task_list_file))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("Could not locate file.");
-        } catch (IOException e) {
-            System.out.println("Something went wrong.");
-        }
+        files.forEach(System.out::println);
+
+    }
+
+    public static Set<String> listFilesUsingJavaIO(String tasks_dir) {
+
+        return Stream.of(Objects.requireNonNull(new File(tasks_dir).listFiles()))
+                .filter(file -> !file.isDirectory())
+                .map(File::getName)
+                .collect(Collectors.toSet());
     }
 
     static void readTask() {
