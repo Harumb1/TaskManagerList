@@ -131,7 +131,6 @@ public class Main {
                             System.out.println("y/n:");
                             deleteChoice = sc.nextLine();
 
-                            //https://stackoverflow.com/questions/5360209/how-to-delete-a-specific-string-in-a-text-file
                             if (deleteChoice.equalsIgnoreCase("y") || deleteChoice.equalsIgnoreCase("yes")) {
                                 System.out.println("Full name of the file: ");
                                 delFile = fullName.nextLine();
