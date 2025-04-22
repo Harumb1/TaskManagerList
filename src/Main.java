@@ -9,12 +9,16 @@ public class Main {
     static String newTask;
     static String exitChoice;
     static String readChoice;
-
+    static String deleteChoice;
 
     static final String base_dir = System.getProperty("user.dir");
+    //gets the current working directory of the program
     static final String tasks_dir = base_dir + File.separator;
+    //adds a file separator (like / on macOS/Linux or \ on Windows) to the end of base_dir (current working directory of the program)
     static final String edit_folder = tasks_dir + "EditFolder" + File.separator;
+    //gets the directory of EditFolder and adds a file separator
     static final String task_list_file = tasks_dir + "ListOfTasks.txt";
+    //gets the directory of ListOfTasks.txt where the tasks' names are stored and later displayed
 
     public static void main(String[] args) throws IOException {
         mainMenu();
@@ -84,6 +88,7 @@ public class Main {
                     if (exitChoice.equalsIgnoreCase("open")) {
                         System.out.println("Which file would you like to OPEN?");
                         readTask();
+                        String fileChoice = readChoice;
                         String input = null;
 
                         try {
@@ -95,8 +100,11 @@ public class Main {
                                 new File(edit_folder).mkdirs();
 
                                 String originalFile = tasks_dir + readChoice + ".txt";
+                                //gets the directory of the task (text file) chosen with readChoice
                                 String tempFile = edit_folder + readChoice + ".txt";
+                                //gets the directory of the temporary created task (text file) in EditFolder which will later replace the original one but with the saved changes
                                 File task = new File(tempFile);
+
 
                                 if (task.createNewFile()) {
                                     while (!"exit".equalsIgnoreCase(input = sc.nextLine())) {
@@ -115,8 +123,51 @@ public class Main {
                             e.printStackTrace();
                         }
 
-                        if(exitChoice.equalsIgnoreCase("delete")){
-                            System.out.println("            ***STILL IN PROGRESS***");
+                        if (exitChoice.equalsIgnoreCase("delete")) {
+//                            System.out.println("            ***STILL IN PROGRESS***");
+                            Scanner fullName = new Scanner(System.in);
+                            String delFile;
+                            System.out.println("Are you sure you would like to delete this file?");
+                            System.out.println("y/n:");
+                            deleteChoice = sc.nextLine();
+
+                            //https://stackoverflow.com/questions/5360209/how-to-delete-a-specific-string-in-a-text-file
+                            if (deleteChoice.equalsIgnoreCase("y") || deleteChoice.equalsIgnoreCase("yes")) {
+                                System.out.println("Full name of the file: ");
+                                delFile = fullName.nextLine();
+                                Files.deleteIfExists(Path.of(tasks_dir + delFile + ".txt"));
+
+                                //edit ListOfTasks.txt and remove the name of the task from the list so it isn't displayed anymore after deletion process
+
+                                new File(edit_folder).mkdirs();
+
+                                String originalFile = tasks_dir + "ListOfTasks.txt";
+                                String tempFile = edit_folder + "ListOfTasks.txt";
+
+                                File task = new File(tempFile);
+
+                                if (task.createNewFile()) {
+                                String charset = "UTF-8";
+                                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(task), charset));
+                                PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream("ListOfTasks.txt"), charset));
+
+                                //Now works but deletes every line of the contents of ListOfTasks.txt
+                                for (String line; (line = reader.readLine()) != null; ) {
+                                    line = line.replace(delFile, "");
+                                    writer.println(line);
+                                }
+                                    reader.close();
+                                    writer.close();
+//
+                                Files.deleteIfExists(Path.of(originalFile));
+                                Files.move(Path.of(tempFile), Path.of(originalFile), StandardCopyOption.REPLACE_EXISTING);
+                                System.out.println("Task deleted!");
+                                }
+
+                            } else if (deleteChoice.equalsIgnoreCase("n") || deleteChoice.equalsIgnoreCase("no")) {
+                                listOfTasks();
+                            }
+
                         }
 
                     } else {
@@ -133,7 +184,7 @@ public class Main {
 
             case "4":
                 System.out.println("            ***STILL IN PROGRESS***\n");
-
+                mainMenu();
                 break;
 
             default:
@@ -148,8 +199,7 @@ public class Main {
     static void mainMenu() throws IOException {
         Scanner sc = new Scanner(System.in);
         System.out.println("\n                      *Note*" +
-                "\n        Type 1-3 in the empty line bellow.");
-        System.out.println("");
+                "\n        Type 1-3 in the empty line bellow.\n");
         System.out.println("  _______    _____              _     _      _ \n" +
                 " |__   __|  |  __ \\            | |   | |    | |\n" +
                 "    | | ___ | |  | | ___   __ _| |__ | | ___| |\n" +
