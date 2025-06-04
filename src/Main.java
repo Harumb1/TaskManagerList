@@ -13,6 +13,7 @@ public class Main {
     static String readChoice;
     static String deleteChoice;
 
+
     static final String base_dir = System.getProperty("user.dir");
     //gets the current working directory of the program
     static final String tasks_dir = base_dir + File.separator + "TaskFolder" + File.separator ;
@@ -23,12 +24,7 @@ public class Main {
     static Set<String> files = listFilesUsingJavaIO(tasks_dir);
 
     public static void main(String[] args) throws IOException {
-
-        while(true){
-            mainMenu();
-            setChoice();
-        }
-
+        RemMe.checkToken();
     }
 
     static void setChoice() throws IOException {
@@ -79,8 +75,9 @@ public class Main {
                                         writer.append(input).append("\n");
                                         writer.flush();
                                         writer.close();
+                                        System.out.println("Changes saved!");
+                                        //ADD A FEATURE WHICH ASKS THE USER IF THE
                                     }
-
                                     Files.deleteIfExists(Path.of(originalFile));
                                     Files.move(Path.of(tempFile), Path.of(originalFile), StandardCopyOption.REPLACE_EXISTING);
                                 }
@@ -120,6 +117,10 @@ public class Main {
             case "3": // Exit
                 System.out.print("See you soon :) ");
                 System.exit(0);
+                break;
+
+            case "4":
+                accInfo();
                 break;
 
             default:
@@ -167,6 +168,7 @@ public class Main {
 
     static void mainMenu() throws IOException {
         Scanner sc = new Scanner(System.in);
+        System.out.println("\nAccount:" + LogIn.logUsername + "\n");
         System.out.println("\n                      *Note*" +
                 "\n        Type 1-3 in the empty line bellow.\n");
         System.out.println("  _______    _____              _     _      _ \n" +
@@ -179,6 +181,7 @@ public class Main {
         System.out.println("\n                  1.NEW TASK");
         System.out.println("                  2.SEE EXISTING TASKS");
         System.out.println("                  3.EXIT");
+        System.out.println("                  4.ACCOUNT");
 
         choice = sc.nextLine();
         setChoice();
@@ -198,7 +201,10 @@ public class Main {
         }
 
     }
-
+    public static void accInfo(){
+        System.out.println("This method is empty lol");
+    }
+    //New way to show which tasks are in the list
     public static Set<String> listFilesUsingJavaIO(String tasks_dir) {
 
         return Stream.of(Objects.requireNonNull(new File(tasks_dir).listFiles()))
