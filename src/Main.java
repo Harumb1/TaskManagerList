@@ -1,8 +1,10 @@
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
+import java.util.Objects;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Main {
     static String choice;
@@ -11,66 +13,29 @@ public class Main {
     static String readChoice;
     static String deleteChoice;
 
+
     static final String base_dir = System.getProperty("user.dir");
     //gets the current working directory of the program
-    static final String tasks_dir = base_dir + File.separator;
+    static final String tasks_dir = base_dir + File.separator + "TaskFolder" + File.separator ;
     //adds a file separator (like / on macOS/Linux or \ on Windows) to the end of base_dir (current working directory of the program)
     static final String edit_folder = tasks_dir + "EditFolder" + File.separator;
     //gets the directory of EditFolder and adds a file separator
-    static final String task_list_file = tasks_dir + "ListOfTasks.txt";
     //gets the directory of ListOfTasks.txt where the tasks' names are stored and later displayed
+    static Set<String> files = listFilesUsingJavaIO(tasks_dir);
 
     public static void main(String[] args) throws IOException {
-        mainMenu();
-        setChoice();
+        RemMe.checkToken();
     }
 
     static void setChoice() throws IOException {
         Scanner sc = new Scanner(System.in);
         switch (choice) {
             case "1": // New Task
-                System.out.println(" _   _                 _____         _    _ \n" +
-                        "| \\ | |               |_   _|       | |  | |\n" +
-                        "|  \\| | _____      __   | | __ _ ___| | _| |\n" +
-                        "| . ` |/ _ \\ \\ /\\ / /   | |/ _` / __| |/ / |\n" +
-                        "| |\\  |  __/\\ V  V /    | | (_| \\__ \\   <|_|\n" +
-                        "\\_| \\_/\\___| \\_/\\_/     \\_/\\__,_|___/_|\\_(_)");
-                System.out.print("Your New Task's Name:\n");
-                newTask = sc.nextLine();
-
-                try {
-                    String input;
-                    File task = new File(tasks_dir + newTask + ".txt");
-                    if (task.createNewFile()) {
-                        input = null;
-                        System.out.println("New Task Created!\n" + "\"" + newTask + "\"");
-                        System.out.println("============================================================================");
-                        while (!"exit".equalsIgnoreCase(input = sc.nextLine())) {
-                            FileWriter writer = new FileWriter(task, true);
-                            writer.append(input).append("\n");
-                            writer.flush();
-                            writer.close();
-                        }
-                    } else {
-                        System.out.println("File already exists.");
-                    }
-                } catch (IOException e) {
-                    System.out.println("An error occurred.");
-                    e.printStackTrace();
-                }
-
-                try (FileWriter taskList = new FileWriter(task_list_file, true)) {
-                    taskList.append(newTask).append("\n");
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-                mainMenu();
+                setNewTask();
                 break;
 
             case "2": // Open/Edit Task
-                listOfTasks();
-
+                ListOfTasks();
                 while (true) {
                     System.out.println("\nType:");
                     System.out.println(" |OPEN| to read an existing task");
@@ -81,14 +46,12 @@ public class Main {
 
                     if (exitChoice.equalsIgnoreCase("exit")) {
                         mainMenu();
-                        setChoice();
                         break;
                     }
 
                     if (exitChoice.equalsIgnoreCase("open")) {
                         System.out.println("Which file would you like to OPEN?");
                         readTask();
-                        String fileChoice = readChoice;
                         String input = null;
 
                         try {
@@ -112,8 +75,9 @@ public class Main {
                                         writer.append(input).append("\n");
                                         writer.flush();
                                         writer.close();
+                                        System.out.println("Changes saved!");
+                                        //ADD A FEATURE WHICH ASKS THE USER IF THE
                                     }
-
                                     Files.deleteIfExists(Path.of(originalFile));
                                     Files.move(Path.of(tempFile), Path.of(originalFile), StandardCopyOption.REPLACE_EXISTING);
                                 }
@@ -124,7 +88,7 @@ public class Main {
                         }
 
                         if (exitChoice.equalsIgnoreCase("delete")) {
-//                            System.out.println("            ***STILL IN PROGRESS***");
+
                             Scanner fullName = new Scanner(System.in);
                             String delFile;
                             System.out.println("Are you sure you would like to delete this file?");
@@ -136,35 +100,8 @@ public class Main {
                                 delFile = fullName.nextLine();
                                 Files.deleteIfExists(Path.of(tasks_dir + delFile + ".txt"));
 
-                                //edit ListOfTasks.txt and remove the name of the task from the list so it isn't displayed anymore after deletion process
-
-                                new File(edit_folder).mkdirs();
-
-                                String originalFile = tasks_dir + "ListOfTasks.txt";
-                                String tempFile = edit_folder + "ListOfTasks.txt";
-
-                                File task = new File(tempFile);
-
-                                if (task.createNewFile()) {
-                                String charset = "UTF-8";
-                                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(task), charset));
-                                PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream("ListOfTasks.txt"), charset));
-
-                                //Now works but deletes every line of the contents of ListOfTasks.txt
-                                for (String line; (line = reader.readLine()) != null; ) {
-                                    line = line.replace(delFile, "");
-                                    writer.println(line);
-                                }
-                                    reader.close();
-                                    writer.close();
-//
-                                Files.deleteIfExists(Path.of(originalFile));
-                                Files.move(Path.of(tempFile), Path.of(originalFile), StandardCopyOption.REPLACE_EXISTING);
-                                System.out.println("Task deleted!");
-                                }
-
                             } else if (deleteChoice.equalsIgnoreCase("n") || deleteChoice.equalsIgnoreCase("no")) {
-                                listOfTasks();
+                                ListOfTasks();
                             }
 
                         }
@@ -178,13 +115,13 @@ public class Main {
                 break;
 
             case "3": // Exit
-                System.out.print("See you soon :) ");
+                accInfo();
                 break;
 
             case "4":
-                System.out.println("            ***STILL IN PROGRESS***\n");
-                mainMenu();
-                break;
+            System.out.print("See you soon :) ");
+            System.exit(0);
+            break;
 
             default:
                 System.out.println("There is no such command!");
@@ -193,6 +130,40 @@ public class Main {
                 break;
         }
 
+    }
+
+    //New Task
+    static void setNewTask(){
+        Scanner sc = new Scanner(System.in);
+        System.out.println(" _   _                 _____         _    _ \n" +
+                "| \\ | |               |_   _|       | |  | |\n" +
+                "|  \\| | _____      __   | | __ _ ___| | _| |\n" +
+                "| . ` |/ _ \\ \\ /\\ / /   | |/ _` / __| |/ / |\n" +
+                "| |\\  |  __/\\ V  V /    | | (_| \\__ \\   <|_|\n" +
+                "\\_| \\_/\\___| \\_/\\_/     \\_/\\__,_|___/_|\\_(_)");
+        System.out.print("Your New Task's Name:\n");
+        newTask = sc.nextLine();
+
+        try {
+            String input;
+            File task = new File(tasks_dir + newTask + ".txt");
+            if (task.createNewFile()) {
+                input = null;
+                System.out.println("New Task Created!\n" + "\"" + newTask + "\"");
+                System.out.println("============================================================================");
+                while (!"exit".equalsIgnoreCase(input = sc.nextLine())) {
+                    FileWriter writer = new FileWriter(task, true);
+                    writer.append(input).append("\n");
+                    writer.flush();
+                    writer.close();
+                }
+            } else {
+                System.out.println("File already exists.");
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
     }
 
     static void mainMenu() throws IOException {
@@ -208,14 +179,13 @@ public class Main {
 
         System.out.println("\n                  1.NEW TASK");
         System.out.println("                  2.SEE EXISTING TASKS");
-        System.out.println("                  3.EXIT");
-        System.out.println("                  4.HELP");
+        System.out.println("                  3.ACCOUNT");
+        System.out.println("                  4.EXIT");
 
         choice = sc.nextLine();
         setChoice();
     }
-
-    static void listOfTasks() {
+    static void ListOfTasks(){
         System.out.println("  _      _     _    ____   __ _______        _        _ \n" +
                 " | |    (_)   | |  / __ \\ / _|__   __|      | |      | |\n" +
                 " | |     _ ___| |_| |  | | |_   | | __ _ ___| | _____| |\n" +
@@ -224,16 +194,24 @@ public class Main {
                 " |______|_|___/\\__|\\____/|_|    |_|\\__,_|___/_|\\_\\___(_)");
 
         System.out.println("LIST OF TASKS:");
-        try (BufferedReader reader = new BufferedReader(new FileReader(task_list_file))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("Could not locate file.");
-        } catch (IOException e) {
-            System.out.println("Something went wrong.");
+        files = listFilesUsingJavaIO(tasks_dir);
+        for (String file : files) {
+            System.out.println(file.replace(".txt", ""));
         }
+
+    }
+    //Account Information *
+    public static void accInfo(){
+        System.out.println("This method is empty lol");
+    }
+
+    //New way to show which tasks are in the list
+    public static Set<String> listFilesUsingJavaIO(String tasks_dir) {
+
+        return Stream.of(Objects.requireNonNull(new File(tasks_dir).listFiles()))
+                .filter(file -> !file.isDirectory())
+                .map(File::getName)
+                .collect(Collectors.toSet());
     }
 
     static void readTask() {
@@ -251,4 +229,41 @@ public class Main {
         }
         exitChoice = sc.nextLine();
     }
+    static void openTask(){
+            Scanner sc = new Scanner(System.in);
+            readTask();
+            String input = null;
+
+            try {
+                if (exitChoice.equalsIgnoreCase("edit")) {
+                    System.out.println("Replacement created!");
+                    System.out.println("============================================================================");
+
+                    // Make sure EditFolder exists
+                    new File(edit_folder).mkdirs();
+
+                    String originalFile = tasks_dir + readChoice + ".txt";
+                    //gets the directory of the task (text file) chosen with readChoice
+                    String tempFile = edit_folder + readChoice + ".txt";
+                    //gets the directory of the temporary created task (text file) in EditFolder which will later replace the original one but with the saved changes
+                    File task = new File(tempFile);
+
+
+                    if (task.createNewFile()) {
+                        while (!"exit".equalsIgnoreCase(input = sc.nextLine())) {
+                            FileWriter writer = new FileWriter(tempFile, true);
+                            writer.append(input).append("\n");
+                            writer.flush();
+                            writer.close();
+                        }
+
+                        Files.deleteIfExists(Path.of(originalFile));
+                        Files.move(Path.of(tempFile), Path.of(originalFile), StandardCopyOption.REPLACE_EXISTING);
+                    }
+                }
+            } catch (IOException e) {
+                System.out.println("An error occurred.");
+                e.printStackTrace();
+            }
+        }
 }
