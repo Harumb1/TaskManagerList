@@ -18,6 +18,7 @@ public class Main {
     //gets the current working directory of the program
     static final String tasks_dir = base_dir + File.separator + "TaskFolder" + File.separator ;
     //adds a file separator (like / on macOS/Linux or \ on Windows) to the end of base_dir (current working directory of the program)
+    static final String acc_folder = base_dir + File.separator + "Account" + File.separator;
     static final String edit_folder = tasks_dir + "EditFolder" + File.separator;
     //gets the directory of EditFolder and adds a file separator
     //gets the directory of ListOfTasks.txt where the tasks' names are stored and later displayed
@@ -75,9 +76,8 @@ public class Main {
                                         writer.append(input).append("\n");
                                         writer.flush();
                                         writer.close();
-                                        System.out.println("Changes saved!");
-                                        //ADD A FEATURE WHICH ASKS THE USER IF THE
                                     }
+                                    System.out.println("Changes saved!");
                                     Files.deleteIfExists(Path.of(originalFile));
                                     Files.move(Path.of(tempFile), Path.of(originalFile), StandardCopyOption.REPLACE_EXISTING);
                                 }
@@ -115,13 +115,13 @@ public class Main {
                 break;
 
             case "3": // Exit
-                System.out.print("See you soon :) ");
-                System.exit(0);
+                accInfo();
                 break;
 
             case "4":
-                accInfo();
-                break;
+            System.out.print("See you soon :) ");
+            System.exit(0);
+            break;
 
             default:
                 System.out.println("There is no such command!");
@@ -168,7 +168,7 @@ public class Main {
 
     static void mainMenu() throws IOException {
         Scanner sc = new Scanner(System.in);
-        System.out.println("\nAccount:" + LogIn.logUsername + "\n");
+        RemMe.readAccount();
         System.out.println("\n                      *Note*" +
                 "\n        Type 1-3 in the empty line bellow.\n");
         System.out.println("  _______    _____              _     _      _ \n" +
@@ -180,8 +180,8 @@ public class Main {
 
         System.out.println("\n                  1.NEW TASK");
         System.out.println("                  2.SEE EXISTING TASKS");
-        System.out.println("                  3.EXIT");
-        System.out.println("                  4.ACCOUNT");
+        System.out.println("                  3.ACCOUNT");
+        System.out.println("                  4.EXIT");
 
         choice = sc.nextLine();
         setChoice();
@@ -201,9 +201,11 @@ public class Main {
         }
 
     }
-    public static void accInfo(){
-        System.out.println("This method is empty lol");
+    //Account Information *
+    public static void accInfo() throws IOException {
+        Account.account();
     }
+
     //New way to show which tasks are in the list
     public static Set<String> listFilesUsingJavaIO(String tasks_dir) {
 
@@ -265,4 +267,6 @@ public class Main {
                 e.printStackTrace();
             }
         }
+
+
 }

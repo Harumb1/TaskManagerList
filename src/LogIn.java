@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -19,7 +20,7 @@ public class LogIn {
                 "               __/ |              \n" +
                 "              |___/               ");
         System.out.println("Do you have an account?");
-        System.out.println("y/n:");
+        System.out.println("y/n/exit:");
         logInChoice = sc.nextLine();
         switch (logInChoice) {
             case "y":
@@ -27,6 +28,10 @@ public class LogIn {
 
             case "n":
                 Register.Register();
+                return false;
+
+            case "exit":
+                System.exit(0);
                 return false;
 
             default:
@@ -50,6 +55,7 @@ public class LogIn {
         System.out.printf("| %-28s |\n", new String(new char[passLength]).replace('\0', '*'));
         System.out.println("+------------------------------+");
         if(JDBSconnection.validateLogin(logUsername, logPassword)){
+            Account.signedAcc();
             System.out.println("Successful Login!");
             return true;
         }else {
