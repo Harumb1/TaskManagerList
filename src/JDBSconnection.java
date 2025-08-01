@@ -49,6 +49,7 @@ public class JDBSconnection {
 
             ResultSet resultSet = checkUserExists.executeQuery();
 
+
             // check to see if the result set is empty
             // if it is empty it means that there was no data row that contains the username
             // (i.e. user does not exist)

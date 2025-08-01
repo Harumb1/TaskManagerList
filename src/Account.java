@@ -7,6 +7,7 @@ import java.util.Scanner;
 
 public class Account {
     static File account = new File(Main.acc_folder + LogIn.logUsername + ".txt");
+    static String account_tasks = Main.tasks_dir + LogIn.logUsername + File.separator;
 
     static void account() throws IOException {
         Scanner sc = new Scanner(System.in);
@@ -30,10 +31,8 @@ public class Account {
             case "y":
                 if(RemMe.token.exists()){
                     Files.delete(RemMe.token.toPath());
-                }
-                if(account.exists()){
-                    Files.delete(Path.of(account.getAbsolutePath()));
-
+                    File accountToDelete = new File(String.valueOf(account));
+                    deleteAccount(accountToDelete);
                 }
                 String[] args = {};
                 Main.main(args);
@@ -50,16 +49,33 @@ public class Account {
     }
     static void signedAcc(){
             try {
-                new File(Main.acc_folder).mkdirs(); // Make sure dir exists
+                new File(Main.acc_folder).mkdirs();
+                // Make sure dir exists
                 if (account.createNewFile()) {
+                    new File(account_tasks).mkdirs();
                     FileWriter remMeWriter = new FileWriter(account);
                     remMeWriter.write(LogIn.logUsername);
                     remMeWriter.close();
-//                    System.out.println("\nAccount:" + LogIn.logUsername);
+
                 }
             } catch (IOException e) {
                 System.out.println("An error occurred.");
                 e.printStackTrace();
             }
+    }
+    static void checkAccount(){
+
+    }
+    public static void deleteAccount(File folder) {
+        File directory = new File(Main.acc_folder);
+        File[] files = directory.listFiles();
+        for (File f : files)
+        {
+            if (f.getName().endsWith(".txt"))
+            {
+                f.delete();
+            }
+        }
+        folder.delete();
     }
 }

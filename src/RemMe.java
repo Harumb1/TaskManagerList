@@ -1,14 +1,13 @@
 import java.io.*;
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class RemMe {
+    static String currentLine;
     static final String tokenDir = Main.base_dir + File.separator + "RememberMe" + File.separator;
     static File token = new File(tokenDir + "remember_me.txt");
-    static String LINE;
+    static Set<String> files = Main.listFilesUsingJavaIO(Main.acc_folder);
 
     static boolean remMe() throws IOException {
         String remChoice;
@@ -66,37 +65,9 @@ public class RemMe {
         }
     }
     static void readAccount(){
-        Path folderPath = Paths.get(Main.acc_folder);
-        // prepare a data structure for a file's name and content
-        Map<String, List<String>> linesOfFiles = new TreeMap<>();
-
-        // retrieve a list of the files in the folder
-        List<String> fileNames = new ArrayList<>();
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(folderPath)) {
-            for (Path path : directoryStream) {
-                fileNames.add(path.toString());
-            }
-        } catch (IOException ex) {
-            System.err.println("Error reading files");
-            ex.printStackTrace();
+        files = Main.listFilesUsingJavaIO(Main.acc_folder);
+        for (String file : files) {
+            System.out.println( "Account: " + file.replace(".txt", ""));
         }
-
-        // go through the list of files
-        for (String file : fileNames) {
-            try {
-                // put the file's name and its content into the data structure
-                List<String> lines = Files.readAllLines(folderPath.resolve(file));
-                linesOfFiles.put(file, lines);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        // finally, print everything
-        linesOfFiles.forEach((String _, List<String> lines) -> {
-            lines.forEach((line) -> {
-                System.out.println("\nAccount:" + line);
-            });
-        });
     }
 }

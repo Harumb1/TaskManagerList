@@ -43,7 +43,7 @@ public class Main {
                     System.out.println(" |EXIT| to return to the main menu");
                     System.out.println("\n*Note* To delete or modify an existing task you have to first open it.");
 
-                    exitChoice = sc.nextLine();
+                    exitChoice = sc.nextLine().trim();
 
                     if (exitChoice.equalsIgnoreCase("exit")) {
                         mainMenu();
@@ -71,7 +71,7 @@ public class Main {
 
 
                                 if (task.createNewFile()) {
-                                    while (!"exit".equalsIgnoreCase(input = sc.nextLine())) {
+                                    while (!"exit".equalsIgnoreCase(input = sc.nextLine().trim())) {
                                         FileWriter writer = new FileWriter(tempFile, true);
                                         writer.append(input).append("\n");
                                         writer.flush();
@@ -93,11 +93,11 @@ public class Main {
                             String delFile;
                             System.out.println("Are you sure you would like to delete this file?");
                             System.out.println("y/n:");
-                            deleteChoice = sc.nextLine();
+                            deleteChoice = sc.nextLine().trim();
 
                             if (deleteChoice.equalsIgnoreCase("y") || deleteChoice.equalsIgnoreCase("yes")) {
                                 System.out.println("Full name of the file: ");
-                                delFile = fullName.nextLine();
+                                delFile = fullName.nextLine().trim();
                                 Files.deleteIfExists(Path.of(tasks_dir + delFile + ".txt"));
 
                             } else if (deleteChoice.equalsIgnoreCase("n") || deleteChoice.equalsIgnoreCase("no")) {
@@ -125,7 +125,7 @@ public class Main {
 
             default:
                 System.out.println("There is no such command!");
-                choice = sc.nextLine();
+                choice = sc.nextLine().trim();
                 setChoice(); // recursion
                 break;
         }
@@ -142,20 +142,20 @@ public class Main {
                 "| |\\  |  __/\\ V  V /    | | (_| \\__ \\   <|_|\n" +
                 "\\_| \\_/\\___| \\_/\\_/     \\_/\\__,_|___/_|\\_(_)");
         System.out.print("Your New Task's Name:\n");
-        newTask = sc.nextLine();
+        newTask = sc.nextLine().trim();
 
         try {
             String input;
             File task = new File(tasks_dir + newTask + ".txt");
             if (task.createNewFile()) {
-                input = null;
                 System.out.println("New Task Created!\n" + "\"" + newTask + "\"");
                 System.out.println("============================================================================");
-                while (!"exit".equalsIgnoreCase(input = sc.nextLine())) {
+                while (!"exit".equalsIgnoreCase(input = sc.nextLine().trim())) {
                     FileWriter writer = new FileWriter(task, true);
                     writer.append(input).append("\n");
                     writer.flush();
                     writer.close();
+                    //Once the file is closed its info gets saved into the database and gets assigned to the user that has created it
                 }
             } else {
                 System.out.println("File already exists.");
@@ -267,6 +267,4 @@ public class Main {
                 e.printStackTrace();
             }
         }
-
-
 }
