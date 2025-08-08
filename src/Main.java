@@ -146,7 +146,20 @@ public class Main {
 
         try {
             String input;
-            File task = new File(tasks_dir + newTask + ".txt");
+            //------------------------------------------------------------
+            Account.files = listFilesUsingJavaIO(Main.acc_folder);
+            for (String file : Account.files) {
+                Account.name = file.replace(".txt", "");
+            }
+            //Account.name = "M"
+            File accountFile = new File(acc_folder + Account.name + ".txt");
+            if (accountFile.exists()){
+                Account.files = listFilesUsingJavaIO(Main.tasks_dir + Account.name + File.separator);
+                for (String file : Account.files) {
+                }
+            }
+
+            File task = new File(tasks_dir + Account.name + File.separator  + newTask + ".txt");
             if (task.createNewFile()) {
                 System.out.println("New Task Created!\n" + "\"" + newTask + "\"");
                 System.out.println("============================================================================");
@@ -195,10 +208,11 @@ public class Main {
                 " |______|_|___/\\__|\\____/|_|    |_|\\__,_|___/_|\\_\\___(_)");
 
         System.out.println("LIST OF TASKS:");
-        files = listFilesUsingJavaIO(tasks_dir);
-        for (String file : files) {
-            System.out.println(file.replace(".txt", ""));
-        }
+        Account.checkAccount();
+//        files = listFilesUsingJavaIO(tasks_dir);
+//        for (String file : files) {
+//            System.out.println(file.replace(".txt", ""));
+//        }
 
     }
     //Account Information *
@@ -217,8 +231,22 @@ public class Main {
 
     static void readTask() {
         Scanner sc = new Scanner(System.in);
+
+        Account.files = listFilesUsingJavaIO(Main.acc_folder);
+        for (String file : Account.files) {
+            Account.name = file.replace(".txt", "");
+        }
+        //Account.name = "M"
+        File accountFile = new File(acc_folder + Account.name + ".txt");
+        if (accountFile.exists()){
+            Account.files = listFilesUsingJavaIO(Main.tasks_dir + Account.name + File.separator);
+            for (String file : Account.files) {
+                System.out.println(file.replace(".txt", ""));
+            }
+        }
+
         readChoice = sc.nextLine();
-        try (BufferedReader reader = new BufferedReader(new FileReader(tasks_dir + readChoice + ".txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(tasks_dir + Account.name + File.separator + readChoice + ".txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
@@ -230,41 +258,4 @@ public class Main {
         }
         exitChoice = sc.nextLine();
     }
-    static void openTask(){
-            Scanner sc = new Scanner(System.in);
-            readTask();
-            String input = null;
-
-            try {
-                if (exitChoice.equalsIgnoreCase("edit")) {
-                    System.out.println("Replacement created!");
-                    System.out.println("============================================================================");
-
-                    // Make sure EditFolder exists
-                    new File(edit_folder).mkdirs();
-
-                    String originalFile = tasks_dir + readChoice + ".txt";
-                    //gets the directory of the task (text file) chosen with readChoice
-                    String tempFile = edit_folder + readChoice + ".txt";
-                    //gets the directory of the temporary created task (text file) in EditFolder which will later replace the original one but with the saved changes
-                    File task = new File(tempFile);
-
-
-                    if (task.createNewFile()) {
-                        while (!"exit".equalsIgnoreCase(input = sc.nextLine())) {
-                            FileWriter writer = new FileWriter(tempFile, true);
-                            writer.append(input).append("\n");
-                            writer.flush();
-                            writer.close();
-                        }
-
-                        Files.deleteIfExists(Path.of(originalFile));
-                        Files.move(Path.of(tempFile), Path.of(originalFile), StandardCopyOption.REPLACE_EXISTING);
-                    }
-                }
-            } catch (IOException e) {
-                System.out.println("An error occurred.");
-                e.printStackTrace();
-            }
-        }
 }
